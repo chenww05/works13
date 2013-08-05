@@ -18,11 +18,13 @@
 
 \title{Overhead Robust Scheduling in Scientific Workflows}
 
+
 \author{
   \IEEEauthorblockN{
-    Weiwei Chen\IEEEauthorrefmark{1}, 
-    Rafael Ferreira da Silva\IEEEauthorrefmark{3}, 
-    Ewa Deelman\IEEEauthorrefmark{1},\\
+    Weiwei Chen\IEEEauthorrefmark{1},
+    Rafael Ferreira da Silva\IEEEauthorrefmark{3},
+    Ewa Deelman\IEEEauthorrefmark{1},
+    Rizos Sakellariou\IEEEauthorrefmark{4}\\
   }
   \IEEEauthorblockA{
      \IEEEauthorrefmark{1}University of Southern California, Information Sciences Institute, Marina Del Rey, CA, USA\\
@@ -32,7 +34,10 @@
     \IEEEauthorrefmark{3}University of Lyon, CNRS, INSERM, CREATIS, Villeurbanne, France\\
     rafael.silva@creatis.insa-lyon.fr \\
   }
-
+  \IEEEauthorblockA{
+    \IEEEauthorrefmark{4}University of Manchester, School of Computer Science, Manchester, U.K.\\
+    rizos@cs.man.ac.uk
+  }
 }
 
 \maketitle
@@ -208,12 +213,20 @@ In this pattern, the overheads in each cycle remain the same but in different cy
 
 
 
-\section{Overhead Friendly Heuristics}
+\section{Overhead Robust Heuristics}
+
+In this section, we evaluate the relative overhead robustness of a series of existing scheduling heuristics and a new scheduling heuristic that we propose. Heuristics usually require to use one feature. We adopt an approach by comparing a pair of heuristics that are based on the same features (length of a task, number of children, breadth/depth etc. ). We know that for most scheduling heuristics (whether they are overhead aware or not) the overall runtime of workflows increases with the duration of overheads. It it critical to know the overall runtime of which heuristics increases slower than others, which we call them overhead friendly or overhead robust, relatively. What is more, comparing the overhead robustness of heuristics with different features does not make sense since they have different optimization goals. In practice we can use heuristics that use different features but not the coupling heuristics that use the same feature but walks towards an opposite direction. For example, we can use both MINMIN and BFS at the same time since they do use different features (length and depth/breadth). But we are not able to mix MINMIN and MAXMIN since they are opposite in terms of the same feature (length).
+1. Relative make senses. In reality, it is more important to know which heuristics provide the shortest runtime relatively. 
+2. 
+We call such heuristics overhead friendly or overhead robust. 
+\begin{enumerate}
+\item MINMIN vs. MAXMIN
+\item Breadth First (BFS) vs. Depth First (DFS)
+\item Fertile Task First (FTF) vs. Unfertile Task First (UTF)
+\item Import Task First (ITF) vs. Unimportant Task First (UTF)
+\end{enumerate}
 
 
-Heuristics
-
-%OLB: Opportunistic Load Balancing (OLB) assigns each task, in arbitrary order, to the next machine that is expected to be available, regardless of the task's expected execution time on that machine [3, 17, 18]. The intuition behind OLB is to keep all machines as busy as possible. One advantage of OLB is its simplicity, but because OLB does not consider expected task execution times, the mappings it finds can result in very poor makespans.%MET: In contrast to OLB, Minimum Execution Time ( MET ) assigns each task, in arbitrary order, to the machine with the best expected execution time for that task, regardless of that machine's availability [3, 17]. The motivation behind MET is to give each task to its best machine. This can cause a severe load imbalance across machines. In general, this heuristic is obviously not applicable to HC environments characterized by consistent ETC matrices.%MCT: Minimum Completion Time (MCT) assigns each task, in arbitrary order, to the machine with the minimum expected completion time for that task [3]. This causes some tasks to be assigned to machines that do not have the minimum execution time for them. The intuition behind MCT is to combine the benefits of OLB and MET, while avoiding the circumstances in which OLB and MET perform poorly.
 
 MINMIN: The Min-min heuristic begins with the set U of all unmapped tasks. Then, the set of minimum completion times, M=[minj<+(ct(ti, mj)), for each t, is found. Next, the task with the overall minimum completion time from M is selected and assigned to the corresponding machine (hence the name Minin). Last, the newly mapped task is removed from U, and the process repeats until all tasks are mapped (i.e., U is empty) [3, 17, 23]. Minin is based on the minimum completion time, as is MCT. However, Minin considers all unmapped tasks during each mapping decision and MCT only considers one task at a time.Minin maps the tasks in the order that changes the machine availability status by the least amount that any assignment could. Let ti be the first task mapped by Minin onto an empty system. The machine that finishes ti the earliest, say mj , is also the machine that executes ti the fastest. For every task that MINMIN maps after ti, the Minin heuristic changes the availability status of mj by the least possible amount for every assignment. Therefore, the percentage of tasks assigned to their first choice (on the basis of execution time) is likely to be higher for Minmin than for Maxin (defined next). The expectation is that a smaller makespan can be obtained if more tasks are assigned to the machines that complete them the earliest and also execute them the fastest.
 
@@ -273,8 +286,6 @@ The experiments presented hereafter evaluate the performance of the four pairs o
 \end{figure}
 
 We extended the WorkflowSim~\cite{WorkflowSim} simulator with the overhead model to simulate a distributed environment where we could evaluate the overhead robustness of scheduling algorithms when varying the average overheads and bandwidth. As an initial attempt, we focus on the workflow engine delay ($d$) in this paper. The simulated computing platform is composed by 20 single core virtual machines (worker nodes), which is the quota per user of some typical distributed environments such as Amazon EC2~\cite{AmazonAWS} and FutureGrid~\cite{FutureGrid}. Each machine has 512MB of memory and the capacity to process 1,000 million instructions per second. 
-%Task scheduling is data-aware, i.e. tasks are scheduled to resources which have the most input data available.
-%WorkflowSim is a feature-rich toolkit to simulate workflow planning and execution. It provides runtime randomization and multiple task clustering methods that we need. 
 
 \begin{center}
   \begin{tabular}{ l|l|l}
