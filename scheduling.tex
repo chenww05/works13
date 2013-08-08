@@ -185,7 +185,7 @@ The motivation for pattern based analysis comes from the observation that for th
   \vspace{-10pt}
 \end{figure}
 
-Most of the work~\cite{} view the overhead duration as an attachment to runtime in workflow timeline. For example, the Pre/Post-script Delay is usually constant, which we call it Adherence Pattern~\ref{fig:adhere}. Scheduling algorithms can just add the delay to the job runtime without significant change to the algorithms. For this pattern, we have shown in our prior work~\cite{Chen} that it does not have much influence on the overhead robustness. 
+Most of the work~\cite{Dong2010, Yang03} view the overhead duration as an attachment to runtime in workflow timeline. For example, the Pre/Post-script Delay is usually constant, which we call it Adherence Pattern~\ref{fig:adhere}. Scheduling algorithms can just add the delay to the job runtime without significant change to the algorithms. For this pattern, we have shown in our prior work~\cite{Chen} that it does not have much influence on the overhead robustness. 
 However, we observe that the Workflow Engine Delay and the Queue Delay increases periodically and steadily. For example, Fig.~\ref{fig:trace} shows the Gantt chart of part of a real trace\footnote{Details: http://www.isi.edu/\string~wchen/fgrid/run}. 
 . The Workflow Engine Delay (red) of the first 16 jobs is 5 seconds and then it increases to 10 seconds. 
 %It is difficult to explain queue delay
@@ -247,7 +247,7 @@ Intuitively speaking, we believe MAXMIN has better overhead robustness than MINM
   \label{fig:longest}
   \vspace{-10pt}
 \end{figure}
-\emph{Breadth First} and \emph{Depth First}: Namely, the Breadth First (BFS) algorithm iterates the jobs at the same workflow level (or depth within a workflow directed acyclic graph) first while the Depth First (DFS) algorithm iterates the jobs at the deepest workflow level first. Intuitively speaking, we believe BFS performs better than DFS in terms of overhead robustness since BFS releases more jobs at the same workflow level for most scientific workflows as shown in~\ref{fig:share}. Therefore, with enough jobs in queue, BFS can fully utilize the resources without wasting this overhead interval.  
+\emph{Breadth First} and \emph{Depth First}: Namely, the Breadth First (BFS) algorithm iterates the jobs at the same workflow level (or depth within a workflow directed acyclic graph) first while the Depth First (DFS) algorithm iterates the jobs at the deepest workflow level first. Intuitively speaking, we believe BFS performs better than DFS in terms of overhead robustness since BFS releases more jobs at the same workflow level for most scientific workflows as shown in~\ref{fig:shape}. Therefore, with enough jobs in queue, BFS can fully utilize the resources without wasting this overhead interval.  
 
 \emph{Fertile First} and \emph{Unfertile First}: The Fertile First (FFS) algorithm sorts all the unmapped jobs based on the number of children jobs that they have and assigns the jobs with most children jobs first. The Unfertile First (UFFS) algorithm works in the opposite way and assigns the jobs with lest children jobs first. Similar to the case of BFS and DFS, we believe FFS should perform better than UFFS since FFS releases more jobs at the next level compared to UFFS and thus FFS can fully utilize the available resources. 
 
@@ -279,9 +279,20 @@ Similar to the case of FFS and UFFS, we believe IFS has a better overhead robust
 
 
 %The idea of these overhead aware heuristics is we would like to improve the overhead robustness even when we are not able to precisely predict the duration of overheads. Instead, workflow overheads have common patterns, which can determine the relative performance of different heuristics. 
+Table~\ref{tab:heuristics} summaries the heuristics and their potential overhead robustness. 
 
-
-
+\begin{center}
+  \begin{tabular}{ l|l|l}
+    \hline
+Heuristics & Overhead Robust & Overhead Unrobust \\ \hline
+    Experiment 1 & MAXMIN & MINMIN \\ \hline
+   Experiment 2 & BFS & DFS \\ \hline
+ Experiment 3 & FFS & UFFS \\ \hline
+Experiment 4 & IFS & UIFS\\
+    \hline
+  \end{tabular}
+\label{tab:heuristics}
+\end{center}
 
 
 % Section
@@ -305,18 +316,7 @@ We extended the WorkflowSim~\cite{WorkflowSim} simulator with the overhead model
 %Task scheduling is data-aware, i.e. tasks are scheduled to resources which have the most input data available.
 %WorkflowSim is a feature-rich toolkit to simulate workflow planning and execution. It provides runtime randomization and multiple task clustering methods that we need. 
 
-\begin{center}
-  \begin{tabular}{ l|l|l}
-    \hline
-Heuristics & Overhead Friendly & Overhead Unfriendly \\ \hline
-    Experiment 1 & MAXMIN & MINMIN \\ \hline
-   Experiment 2 & BFS & DFS \\ \hline
- Experiment 3 & FFS & UFFS \\ \hline
-Experiment 4 & IFS & UIFS\\
-    \hline
-  \end{tabular}
-\label{tab:heuristics}
-\end{center}
+
 
 Three workflows are used in the experiments: 
 Broadband~\cite{Broadband} is an application that enables researchers to combine long-period deterministic seismograms with high-frequency stochastic seismograms. 
@@ -390,7 +390,7 @@ Experiment 1: Fig.~\ref{fig:MAX-MIN-Broadband},~\ref{fig:MAX-MIN-CyberShake},~\r
 \end{figure}
 
 
-Experiment 2: Fig.~\ref{fig:DFS-BFS-Broadband},~\ref{fig:DFS-BFS-CyberShake},~\ref{fig:DFS-BFS-Montage} shows the \emph{Performance Gain} of BFS over DFS for the three workflows. We observe that most  \emph{Performance Gain} $>0$ and thus BFS performs better than DFS in terms of overhead robustness. What is more, Fig~\ref{fig:DFS-BFS-CyberShake} shows with the increase of average bandwidth, the \emph{Performance Gain} is more significant. We can also see that when the average bandwidth is high, the \emph{Performance Gain} increases with the average workflow engine delay. This suggests us in a real environment with a large overhead, we should use BFS instead of DFS. 
+Experiment 2: Fig.~\ref{fig:DFS-BFS-Broadband},~\ref{fig:DFS-BFS-CyberShake},~\ref{fig:DFS-BFS-Montage} show the \emph{Performance Gain} of BFS over DFS for the three workflows. We observe that most  \emph{Performance Gain} $>0$ and thus BFS performs better than DFS in terms of overhead robustness. What is more, Fig~\ref{fig:DFS-BFS-CyberShake} shows with the increase of average bandwidth, the \emph{Performance Gain} is more significant. We can also see that when the average bandwidth is high, the \emph{Performance Gain} increases with the average workflow engine delay. This suggests us in a real environment with a large overhead, we should use BFS instead of DFS. 
 
 
 \begin{figure}[!htb]
@@ -419,7 +419,7 @@ Experiment 2: Fig.~\ref{fig:DFS-BFS-Broadband},~\ref{fig:DFS-BFS-CyberShake},~\r
 
 
 
-Experiment 3: Fig.~\ref{fig:UFFS-FFS-Broadband},~\ref{fig:UFFS-FFS-CyberShake},~\ref{fig:UFFS-FFS-Montage} shows the \emph{Performance Gain} of FFS over UFFS for the three workflows. We observe that most  \emph{Performance Gain} $>0$ and thus FFS performs better than UFFS in terms of overhead robustness, which is similar to Experiment 2. Comparing Fig.~\ref{fig:DFS-BFS-Broadband} and Fig.~\ref{fig:UFFS-FFS-Broadband} we can see the \emph{Performance Gain} of FFS over UFFS is more significant (30\%) than that of BFS over DFS (20\%).  
+Experiment 3: Fig.~\ref{fig:UFFS-FFS-Broadband},~\ref{fig:UFFS-FFS-CyberShake},~\ref{fig:UFFS-FFS-Montage} show the \emph{Performance Gain} of FFS over UFFS for the three workflows. We observe that most  \emph{Performance Gain} $>0$ and thus FFS performs better than UFFS in terms of overhead robustness, which is similar to Experiment 2. Comparing Fig.~\ref{fig:DFS-BFS-Broadband} and Fig.~\ref{fig:UFFS-FFS-Broadband} we can see the \emph{Performance Gain} of FFS over UFFS is more significant (30\%) than that of BFS over DFS (20\%).  
 \begin{figure}[!htb]
 \centering
  \includegraphics[width=0.9\linewidth]{figure/UIFS-IFS-Broadband.pdf}
@@ -443,7 +443,7 @@ Experiment 3: Fig.~\ref{fig:UFFS-FFS-Broadband},~\ref{fig:UFFS-FFS-CyberShake},~
   \label{fig:UIFS-IFS-Montage}
   \vspace{-10pt}
 \end{figure}
-Experiment 4: Fig.~\ref{fig:UIFS-IFS-Broadband},~\ref{fig:UIFS-IFS-CyberShake},~\ref{fig:UIFS-IFS-Montage} shows the \emph{Performance Gain} of IFS over UIFS for the three workflows. We observe that most  \emph{Performance Gain} $>0$ and thus IFS performs better than UIFS in terms of overhead robustness, which is similar to Experiment 3. The reason is that for these workflows, IF based heuristics can produce similar schedule as the heuristics based on the number of children. Most of the workflows used in this paper is not irregular enough and thus we are not able to show the difference of IF based heuristics and the heuristics based on the number of children. 
+Experiment 4: Fig.~\ref{fig:UIFS-IFS-Broadband},~\ref{fig:UIFS-IFS-CyberShake},~\ref{fig:UIFS-IFS-Montage} show the \emph{Performance Gain} of IFS over UIFS for the three workflows. We observe that most  \emph{Performance Gain} $>0$ and thus IFS performs better than UIFS in terms of overhead robustness, which is similar to Experiment 3. The reason is that for these workflows, IF based heuristics can produce similar schedule as the heuristics based on the number of children. Most of the workflows used in this paper is not irregular enough and thus we are not able to show the difference of IF based heuristics and the heuristics based on the number of children. 
 
 %Both strategies capture the structural and runtime information, reducing data transfers between tasks, while HRB focuses on runtime distribution, which in this case is none. 
 
